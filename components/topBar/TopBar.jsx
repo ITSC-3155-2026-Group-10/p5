@@ -3,21 +3,43 @@ import {
   AppBar, Toolbar, Typography
 } from '@mui/material';
 import './TopBar.css';
+import fetchModel from '../../lib/fetchModelData';
 
-/**
- * Define TopBar, a React componment of project #5
- */
 class TopBar extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      version: ''
+    };
+  }
+
+  componentDidMount() {
+    fetchModel('/test/info')
+      .then((response) => {
+        this.setState({
+          version: response.data.__v
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching version:', error);
+      });
   }
 
   render() {
     return (
       <AppBar className="topbar-appBar" position="absolute">
         <Toolbar>
-          <Typography variant="h5" color="inherit">
-              This is the TopBar component
+          <Typography variant="h5" color="inherit" sx={{ flexGrow: 1 }}>
+            Macari Allison
+          </Typography>
+
+          <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
+            {this.props.context}
+          </Typography>
+
+          <Typography variant="h6" color="inherit">
+            Version {this.state.version}
           </Typography>
         </Toolbar>
       </AppBar>
