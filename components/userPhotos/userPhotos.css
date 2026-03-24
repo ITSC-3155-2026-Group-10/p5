@@ -1,0 +1,26 @@
+.user-photos-container {
+  padding: 10px;
+}
+
+.photo-page-title {
+  margin-bottom: 12px;
+}
+
+.photo-card {
+  margin-bottom: 20px;
+}
+
+.photo-date {
+  margin-bottom: 10px;
+}
+
+.photo-image {
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.comment-block {
+  margin-top: 10px;
+}
