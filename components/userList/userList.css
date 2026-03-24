@@ -1,0 +1,17 @@
+.user-list-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.MuiListItem-root {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.MuiList-root {
+  width: 100%;
+}
+
+.MuiDivider-root {
+  margin: 4px 0;
+}
