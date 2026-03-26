@@ -1,9 +1,17 @@
-# \<Project Name\> Scrum Team
+# \<PhotoShare App\> Scrum Team
 ## Product Owner
-\<Team Member Name\>
+\<Julius Dames\>
 ## Scrum Master
-\<Team Member Name\>
+\<Macari Allison\>
 ## Developers
 - \<Julius Dames\>
 - \<Macari Allison\>
 - \<Sam Chen\>
+
+## Team Overview
+We are buildng a PhotoShare web application using React. 
+
+## Tools Used
+- GitHub Projects (Scrum board)
+- GitHub Issues (PBIs)
+- React (frontend)
