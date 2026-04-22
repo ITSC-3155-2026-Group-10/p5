@@ -3,7 +3,7 @@ import {
   AppBar, Toolbar, Typography
 } from '@mui/material';
 import './TopBar.css';
-import fetchModel from '../../lib/fetchModelData';
+import axios from 'axios';
 
 class TopBar extends React.Component {
   constructor(props) {
@@ -15,15 +15,15 @@ class TopBar extends React.Component {
   }
 
   componentDidMount() {
-    fetchModel('/test/info')
-      .then((response) => {
-        this.setState({
-          version: response.data.__v
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching version:', error);
-      });
+    axios.get('/test/info')
+  .then((response) => {
+    this.setState({
+      version: response.data.__v
+    });
+  })
+  .catch((error) => {
+    console.error('Error fetching version:', error);
+  });
   }
 
   render() {

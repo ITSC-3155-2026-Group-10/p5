@@ -8,7 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import './userList.css';
 
-import fetchModel from '../../lib/fetchModelData';
+import axios from 'axios';
 
 class UserList extends React.Component {
   constructor(props) {
@@ -20,15 +20,15 @@ class UserList extends React.Component {
   }
 
   componentDidMount() {
-    fetchModel('/user/list')
-      .then((response) => {
-        this.setState({
-          users: response.data
-        });
-      })
-      .catch((error) => {
-        console.error('Error loading users:', error);
+    axios.get('/user/list')
+    .then((response) => {
+      this.setState({
+        users: response.data
       });
+    })
+    .catch((error) => {
+      console.error('Error loading users:', error);
+    });
   }
 
   render() {

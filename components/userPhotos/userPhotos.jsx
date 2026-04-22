@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import './userPhotos.css';
 
-import fetchModel from '../../lib/fetchModelData';
+import axios from 'axios';
 
 class UserPhotos extends React.Component {
   constructor(props) {
@@ -36,8 +36,8 @@ class UserPhotos extends React.Component {
 
   loadPhotoData() {
     const userId = this.props.match.params.userId;
-
-    fetchModel(`/photosOfUser/${userId}`)
+  
+    axios.get(`/photosOfUser/${userId}`)
       .then((response) => {
         this.setState({
           photos: response.data
@@ -46,15 +46,15 @@ class UserPhotos extends React.Component {
       .catch((error) => {
         console.error('Error loading photos:', error);
       });
-
-    fetchModel(`/user/${userId}`)
+  
+    axios.get(`/user/${userId}`)
       .then((response) => {
         const userData = response.data;
-
+  
         this.setState({
           user: userData
         });
-
+  
         if (this.props.changeContext) {
           this.props.changeContext(
             `Photos of ${userData.first_name} ${userData.last_name}`

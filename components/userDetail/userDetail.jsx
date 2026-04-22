@@ -6,7 +6,7 @@ import {
 import { Link } from 'react-router-dom';
 import './userDetail.css';
 
-import fetchModel from '../../lib/fetchModelData';
+import axios from 'axios';
 
 class UserDetail extends React.Component {
   constructor(props) {
@@ -31,24 +31,23 @@ class UserDetail extends React.Component {
   }
 
   loadUser() {
-
     const userId = this.props.match.params.userId;
-
-    fetchModel(`/user/${userId}`)
+  
+    axios.get(`/user/${userId}`)
       .then((response) => {
-
+  
         const userData = response.data;
-
+  
         this.setState({
           user: userData
         });
-
+  
         if (this.props.changeContext) {
           this.props.changeContext(
             `${userData.first_name} ${userData.last_name}`
           );
         }
-
+  
       })
       .catch((error) => {
         console.error("Error loading user:", error);
