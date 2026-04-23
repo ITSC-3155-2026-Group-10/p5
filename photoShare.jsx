@@ -18,11 +18,15 @@ class PhotoShare extends React.Component {
     super(props);
 
     this.state = {
-      context: ""
+      currentUser: null
     };
 
     this.changeContext = this.changeContext.bind(this);
   }
+
+  SetCurrentUser = (user) => {
+    this.setState({ currentUser: user });
+  };
 
   changeContext(newText) {
     this.setState({
