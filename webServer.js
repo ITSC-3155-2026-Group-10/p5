@@ -10,6 +10,11 @@ const async = require("async");
 const express = require("express");
 const app = express();
 
+const fs = require("fs");
+const processFormBoy = multer({
+  storage: multer.memoryStorage()
+}).single("uploadedphoto");
+
 // session + body parsing
 app.use(session({
   secret: "secretKey",
@@ -87,14 +92,77 @@ app.post("/admin/logout", function (request, response) {
   });
 });
 
+// ADD NEW PHOTO
+app.post("/photos/new", function (request, response) {
+  if (!request.session.user) {
+    return response.status(401).send("Unauthorized");
+  }
+
+  processFormBody(request, response, function (err) {
+    if (err || !request.file) {
+      return response.status(400).send("No file uploaded");
+    }
+
+    const timestamp = new Date().valueOf();
+    const filename = "U" + timestamp + request.file.originalname;
+
+    fs.writeFile("./images/" + filename, request.file.buffer, function (err2) {
+      if (err2) {
+        return response.status(500).send("Error saving file");
+      }
+
+      Photo.create({
+        file_name: filename,
+        date_time: new Date(),
+        user_id: request.session.user._id,
+        comments: []
+      })
+        .then(() => response.end())
+        .catch(err3 => response.status(500).send(JSON.stringify(err3)));
+    });
+  });
+});
+
+// ADD COMMENT TO PHOTO
+app.post("/commentsOfPhoto/:photo_id", function (request, response) {
+  if (!request.session.user) {
+    return response.status(401).send("Unauthorized");
+  }
+
+  const photoId = request.params.photo_id;
+  const commentText = request.body.comment;
+
+  if (!photoId) {
+    return response.status(400).send("photo_id required");
+  }
+
+  if (!commentText || commentText.trim() === "") {
+    return response.status(400).send("comment required");
+  }
+
+  Photo.updateOne(
+    { _id: photoId },
+    {
+      $push: {
+        comments: {
+          comment: commentText,
+          date_time: new Date(),
+          user_id: request.session.user._id,
+          _id: new mongoose.Types.ObjectId()
+        }
+      }
+    }
+  )
+    .then(() => response.end())
+    .catch(err => response.status(500).send(JSON.stringify(err)));
+});
+
 // BLOCK all routes if not logged in
 app.use(function (request, response, next) {
   // allow login, logout, AND test routes
   if (
-    request.path.startsWith("/admin") ||
-    request.path.startsWith("/test") ||
-    request.path.startsWith("/user") ||
-    request.path.startsWith("/photosOfUser")
+    request.path.startsWith("/admin/login") ||
+    request.path.startsWith("/admin/logout")
   ) {
     next();
     return;
@@ -156,6 +224,46 @@ app.get("/test/:p1", function (request, response) {
   }
 });
 
+// REGISTER USER
+app.post("/user", function (request, response) {
+  const {
+    login_name,
+    password,
+    first_name,
+    last_name,
+    location,
+    description,
+    occupation
+  } = request.body;
+
+  if (!login_name) return response.status(400).send("login_name required");
+  if (!password) return response.status(400).send("password required");
+  if (!first_name) return response.status(400).send("first_name required");
+  if (!last_name) return response.status(400).send("last_name required");
+
+  User.findOne({ login_name: login_name })
+    .then(existingUser => {
+      if (existingUser) {
+        return response.status(400).send("login_name already exists");
+      }
+
+      return User.create({
+        login_name,
+        password,
+        first_name,
+        last_name,
+        location,
+        description,
+        occupation
+      });
+    })
+    .then(newUser => {
+      if (!newUser) return;
+      response.end(JSON.stringify(newUser));
+    })
+    .catch(err => response.status(500).send(JSON.stringify(err)));
+});
+
 // USER LIST
 app.get("/user/list", function (request, response) {
   User.find({}, { _id: 1, first_name: 1, last_name: 1 }, function (err, users) {
@@ -175,7 +283,7 @@ app.get("/user/list", function (request, response) {
 app.get("/user/:id", function (request, response) {
   const id = request.params.id;
 
-  User.find({ _id: { $eq: id } }, { __v: 0 }, function (err, user) {
+  User.findById(id, { __v: 0, login_name: 0, password: 0 }, function (err, user) {
     if (err) {
       response.status(500).send(JSON.stringify(err));
       return;
@@ -260,9 +368,8 @@ app.get("/photosOfUser/:id", function (request, response) {
       response.status(500).send(JSON.stringify(err));
       return;
     }
-    if (photos.length === 0) {
-      response.status(400).send();
-      return;
+    if (!photos) {
+      return response.end(JSON.stringify([]));
     }
     response.end(JSON.stringify(photos));
   });
