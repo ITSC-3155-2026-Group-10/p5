@@ -31,6 +31,8 @@ class UserList extends React.Component {
     });
   }
 
+  <UserList currentUser={this.state.currentUser} />
+  
   render() {
     return (
       <List component="nav">
