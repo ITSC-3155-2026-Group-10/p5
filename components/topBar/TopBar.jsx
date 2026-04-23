@@ -14,6 +14,12 @@ class TopBar extends React.Component {
     };
   }
 
+<TopBar
+  context={this.state.context}
+  currentUser={this.state.currentUser}
+  setCurrentUser={this.SetCurrentUser}
+/>
+
   componentDidMount() {
     axios.get('/test/info')
   .then((response) => {
