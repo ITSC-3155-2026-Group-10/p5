@@ -12,6 +12,7 @@ import TopBar from './components/topBar/TopBar';
 import UserDetail from './components/userDetail/userDetail';
 import UserList from './components/userList/userList';
 import UserPhotos from './components/userPhotos/userPhotos';
+import LoginRegister from './components/loginRegister/loginRegister';
 
 class PhotoShare extends React.Component {
   constructor(props) {
@@ -57,38 +58,53 @@ class PhotoShare extends React.Component {
 
                 <Switch>
 
-                  <Route exact path="/"
-                    render={() => (
-                      <Typography variant="body1">
-                        Welcome to your photosharing app!
-                      </Typography>
+                  {/* LOGIN PAGE */}
+                  <Route
+                    path="/login-register"
+                    render={(props) => (
+                      <LoginRegister
+                        {...props}
+                        setCurrentUser={this.SetCurrentUser}
+                        />
                     )}
-                  />
+                    />
 
-                  <Route
-                    path="/users/:userId"
-                    render={(props) =>
-                      <UserDetail
-                        {...props}
-                        changeContext={this.changeContext}
-                      />
-                    }
-                  />
+                  {/* PROTECTED ROUTES */}
+                  {this.state.currentUser ? (
+        <>
+          <Route exact path="/"
+            render={() => (
+              <Typography variant="body1">
+                Welcome to your photosharing app!
+              </Typography>
+            )}
+            />
 
-                  <Route
-                    path="/photos/:userId"
-                    render={(props) =>
-                      <UserPhotos
-                        {...props}
-                        changeContext={this.changeContext}
-                      />
-                    }
-                  />
+          <Route
+            path="/users/:userId"
+          render={(props) =>
+            <UserDetail
+              {...props}
+              changeContext={this.changeContext}
+            />
+          }
+        />
 
-                  <Route
-                    path="/users"
-                    component={UserList}
-                  />
+          <Route
+            path="/photos/:userId"
+            render={(props) =>
+              <UserPhotos
+                {...props}
+                changeContext={this.changeContext}
+                />
+            }
+            />
+
+          <Route path="/users" component={UserList} />
+        </>
+      ) : (
+        <Route render={() => <LoginRegister setCurrentUser={this.SetCurrentUser} />} />
+      )}
 
                 </Switch>
 
