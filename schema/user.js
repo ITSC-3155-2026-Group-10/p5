@@ -11,9 +11,8 @@ const userSchema = new mongoose.Schema({
   location: String,
   description: String,
   occupation: String,
-
-  login_name: { type: String, required : true, unique: true },
-  password: { type: String, required: true }
+  login_name: String,
+  password: String
 });
 
 /**
