@@ -8,10 +8,16 @@ import axios from 'axios';
 class TopBar extends React.Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
+      app_info: undefined,
+      photo_upload_show: false,
+    photo_upload_error: false,
+    photo_upload_success: false
       version: ''
     };
+  this.handleLogout = this.handleLogout.bind(this);
+  this.handleNewPhoto = this.handleNewPhoto.bind(this);
   }
 
 <TopBar
@@ -27,11 +33,46 @@ class TopBar extends React.Component {
       version: response.data.__v
     });
   })
-  .catch((error) => {
+      .catch((error) => {
     console.error('Error fetching version:', error);
   });
   }
 
+handleLogout = () => {
+      axios.post("/admin/logout")
+          .then(() =>
+          {
+              this.props.changeUser(undefined);
+          })
+          .catch( error => {
+              this.props.changeUser(undefined);
+              console.log(error);
+          });  
+  };
+
+handleNewPhoto = (e) => {
+      e.preventDefault();
+      if (this.uploadInput.files.length > 0) {
+          const domForm = new FormData();
+          domForm.append('uploadedphoto', this.uploadInput.files[0]);
+          axios.post("/photos/new", domForm)
+              .then(() => {
+                  this.setState({
+                      photo_upload_show: true,
+                      photo_upload_error: false,
+                      photo_upload_success: true
+                  });
+              })
+              .catch(error => {   
+                  this.setState({
+                      photo_upload_show: true,
+                      photo_upload_error: true,
+                      photo_upload_success: false
+                    });  
+                  console.log(error);
+                });
+        }
+    };
   render() {
     return (
       <AppBar className="topbar-appBar" position="absolute">
